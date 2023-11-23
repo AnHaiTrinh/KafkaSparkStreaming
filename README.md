@@ -61,20 +61,7 @@ Offset: 3
 ## Kafka connect
 Unzip the zip file in *connectors* folder then move the *lib* folder (the ones containing .jar files) to the *connectors* folder
 
-Exec into the postgres container to create some data:
-```bash
-docker exec -it postgres bash
-psql -U postgres -d activity_logs
-
-# SQL
-CREATE TABLE IF NOT EXISTS users (
-  id SERIAL PRIMARY_KEY,
-  name VARCHAR(256) NOT NULL,
-  age INTEGER NOT NULL
-);
-INSERT INTO users (name, age) VALUES ('John', 25);
-```
-Wait for the kafka-connect job to start, then run the following command to create the connector:
+Wait for the kafka-connect container to start, then run the following command to create the connector:
 ```bash
 docker exec -it kafka-connect bash
 curl -i -X POST -H "Content-Type: application/json" -d @/connectors/jdbc-source-connect.json http://localhost:8083/connectors
@@ -84,10 +71,14 @@ Check the result using kafka console consumer:
 ```bash
 docker exec -it kafka1 bash
 # Check if the topic from kafka-connect is created or not
-# There should be a topic named "jdbc_users"
+# There should be a topic named "jdbc_activity_logs"
 /bin/kafka-topics --list --bootstrap-server kafka1:29092,kafka2:29093
+
 # List the messages in the specified topic
-/bin/kafka-console-consumer --bootstrap-server kafka1:29092,kafka2:29093 --topic jdbc_users --from-beginning
+/bin/kafka-console-consumer --bootstrap-server kafka1:29092,kafka2:29093 --topic parking-lot-log --from-beginning
+# Or alternatively with consumer.py program
+cd consumer
+python consumer.py 
 ```
 Try insert more data into the database, then check updated output in the kafka console consumer
 
