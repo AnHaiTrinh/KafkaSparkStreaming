@@ -75,7 +75,7 @@ docker exec -it kafka1 bash
 /bin/kafka-topics --list --bootstrap-server kafka1:29092,kafka2:29093
 
 # List the messages in the specified topic
-/bin/kafka-console-consumer --bootstrap-server kafka1:29092,kafka2:29093 --topic parking-lot-log --from-beginning
+/bin/kafka-console-consumer --bootstrap-server kafka1:29092,kafka2:29093 --topic jdbc_activity_logs --from-beginning
 # Or alternatively with consumer.py program
 cd consumer
 python consumer.py 

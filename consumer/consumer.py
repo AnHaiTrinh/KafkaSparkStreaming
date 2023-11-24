@@ -50,8 +50,7 @@ if __name__ == '__main__':
     try:
         topics = sys.argv[1]
         topics = topics.split(',')
-        print(topics)
-        basic_consume_loop(consumer, ["parking-lot-log"])
+        basic_consume_loop(consumer, topics)
     except IndexError:
         print('Please provide a topic name to consume')
         sys.exit(1)
