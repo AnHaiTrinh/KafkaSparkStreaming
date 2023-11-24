@@ -8,7 +8,7 @@ producer = Producer({
     'bootstrap.servers': 'localhost:9092,localhost:9093',
 })
 
-topic = 'parking-lot-log'
+topic = 'jdbc_activity_logs'
 
 
 def acked(err, msg):
@@ -24,7 +24,7 @@ def acked(err, msg):
 
 
 while True:
-    parking_lot_id = random.randint(0, 10)
+    parking_lot_id = random.randint(1, 10)
     payload = {
         'parking_lot_id': parking_lot_id,
         'license_plate': str(uuid4()),

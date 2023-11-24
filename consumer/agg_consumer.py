@@ -46,7 +46,7 @@ def shutdown():
 
 if __name__ == '__main__':
     try:
-        basic_consume_loop(consumer, ["parking-lot-agg"])
+        basic_consume_loop(consumer, ["parking_lot_agg"])
     except KeyboardInterrupt:
         shutdown()
         sys.exit(0)

@@ -18,7 +18,7 @@ df = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "kafka1:29092,kafka2:29093") \
-    .option("subscribe", "parking-lot-log") \
+    .option("subscribe", "jdbc_activity_logs") \
     .option("startingOffsets", "earliest") \
     .load()
 
@@ -47,7 +47,7 @@ query = aggregate \
     .outputMode("update") \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "kafka1:29092,kafka2:29093") \
-    .option("topic", "parking-lot-agg") \
+    .option("topic", "parking_lot_agg") \
     .option("checkpointLocation", checkpoint_path) \
     .start()
 

@@ -48,7 +48,12 @@ def shutdown():
 
 if __name__ == '__main__':
     try:
-        basic_consume_loop(consumer, ["parking-lot-log"])
+        topics = sys.argv[1]
+        topics = topics.split(',')
+        basic_consume_loop(consumer, topics)
+    except IndexError:
+        print('Please provide a topic name to consume')
+        sys.exit(1)
     except KeyboardInterrupt:
         shutdown()
         sys.exit(0)
