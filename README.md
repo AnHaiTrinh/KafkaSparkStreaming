@@ -21,7 +21,7 @@ If the producer is running, the output should be like this:
 ```bash
 Message produced
 Offset: 0
-Topic: parking-lot-log
+Topic: jdbc_activity_logs
 Key: b'2'
 Value: b'{"parking_lot_id": 2, "license_plate": "6725601a-c9de-448b-8a5f-01672b95d4dd", "vehicle_type": "car", "activity_type": "exit", "created_at": "2023-11-21 19:54:40.147413"}'
 ____________________
@@ -33,7 +33,7 @@ $env:KAFKA_CONSUMER_GROUP_ID="MY_CONSUMER_GROUP_ID" # Windows PC
 set KAFKA_CONSUMER_GROUP_ID="MY_CONSUMER_GROUP_ID" # Windows CMD
 export KAFKA_CONSUMER_GROUP_ID="MY_CONSUMER_GROUP_ID" # Linux\MacOS
 cd consumer
-python consumer.py
+python consumer.py jdbc_activity_logs
 ```
 When a message is consumed, the output should be like this:
 ```bash
