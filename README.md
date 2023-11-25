@@ -15,13 +15,12 @@ docker compose up -d
 In a new terminal, start the producer:
 ```bash
 cd producer
-python producer.py
+python producer.py jdbc_activity_logs
 ```
 If the producer is running, the output should be like this:
 ```bash
 Message produced
 Offset: 0
-Topic: jdbc_activity_logs
 Key: b'2'
 Value: b'{"parking_lot_id": 2, "license_plate": "6725601a-c9de-448b-8a5f-01672b95d4dd", "vehicle_type": "car", "activity_type": "exit", "created_at": "2023-11-21 19:54:40.147413"}'
 ____________________
@@ -45,7 +44,7 @@ ____________________
 In a new terminal, wait for the Spark Streaming job to begin, then start the aggregator:
 ```bash
 cd consumer
-python agg_consumer.py
+python consumer.py parking_lot_agg
 ```  
 The result should be like this:
 ```bash
