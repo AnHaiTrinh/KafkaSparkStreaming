@@ -6,4 +6,4 @@ COPY consumer.py /app
 
 RUN pip3 install confluent-kafka
 
-CMD ["python3", "consumer.py"]
+ENTRYPOINT ["python3", "consumer.py"]

@@ -6,4 +6,4 @@ COPY producer.py /app
 
 RUN pip3 install confluent-kafka
 
-CMD ["python3", "producer.py"]
+ENTRYPOINT ["python3", "producer.py"]
