@@ -1,0 +1,17 @@
+{
+  "name": "redis-sink-connector",
+  "config": {
+    "connector.class": "com.redis.kafka.connect.RedisSinkConnector",
+    "tasks.max": "1",
+    "topics": "parking_lot_agg",
+    "redis.host": "redis",
+    "redis.port": "6379",
+    "redis.database": "0",
+    "redis.key": "parking_lot",
+    "redis.command": "HSET",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter.schemas.enable": "false"
+  }
+}

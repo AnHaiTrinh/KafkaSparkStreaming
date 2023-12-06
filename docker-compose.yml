@@ -194,6 +194,12 @@ services:
     networks:
       - kafka-spark
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - kafka-spark
+
 networks:
   kafka-spark:
     driver: "bridge"
