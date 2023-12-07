@@ -60,7 +60,7 @@ Offset: 3
 ## Kafka connect
 Unzip the zip file in *connectors* folder then move the *lib* folder (the ones containing .jar files) to the *connectors* folder
 
-Wait for the kafka-connect container to start, then run the following command to create the connector:
+Wait for the kafka-connect container to start, then run the following command to create the JDBC source connector:
 ```bash
 docker exec -it kafka-connect bash
 curl -i -X POST -H "Content-Type: application/json" -d @/connectors/jdbc-source-connect.json http://localhost:8083/connectors
@@ -81,6 +81,21 @@ python consumer.py
 ```
 Try insert more data into the database, then check updated output in the kafka console consumer
 
+Similarly, create the redis sink connector:
+```bash
+docker exec -it kafka-connect bash
+curl -i -X POST -H "Content-Type: application/json" -d @/connectors/redis-sink-connect.json http://localhost:8083/connectors
+# The response code should be 201
+```
+Check the result using redis-cli:
+```bash
+docker exec -it redis redis-cli
+# Each parking lot will have an associated key in the form of "parking_lot:<parking_lot_id>"
+# The value is stored as redis hash data type
+KEYS parking_lot
+# Get the values of a key
+HVALS parking_lot:2
+```
 ## Clean up
 ```bash
 docker compose down

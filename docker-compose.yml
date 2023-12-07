@@ -4,7 +4,7 @@ services:
     image: confluentinc/cp-zookeeper
     container_name: zookeeper
     networks:
-      - kafka-spark
+      - kafka-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -18,6 +18,8 @@ services:
     depends_on:
       - zookeeper
     networks:
+      - kafka-zookeeper
+      - kafka-connect
       - kafka-spark
     ports:
       - "9092:9092"
@@ -43,6 +45,8 @@ services:
       - zookeeper
     networks:
       - kafka-spark
+      - kafka-zookeeper
+      - kafka-connect
     ports:
       - "9093:9093"
     environment:
@@ -109,7 +113,7 @@ services:
       - .\postgres:/var/lib/postgresql/data
       - .\init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - kafka-spark
+      - connect-postgres
 
   kafka-connect:
     image: confluentinc/cp-kafka-connect
@@ -118,6 +122,7 @@ services:
       - kafka1
       - kafka2
       - postgres
+      - redis
     ports:
       - "8089:8083"
     environment:
@@ -141,42 +146,9 @@ services:
     volumes:
       - .\connectors:/connectors
     networks:
-      - kafka-spark
-
-
-  #  producer:
-#    image: kafka-producer
-#    container_name: producer
-#    restart: always
-#    depends_on:
-#      - kafka1
-#      - kafka2
-#    networks:
-#      - kafka-spark
-#
-#  consumer1:
-#    image: kafka-consumer
-#    container_name: consumer1
-#    restart: always
-#    environment:
-#      - KAFKA_CONSUMER_GROUP_ID=consumer-group-1
-#    depends_on:
-#      - kafka1
-#      - kafka2
-#    networks:
-#      - kafka-spark
-#
-#  consumer2:
-#    image: kafka-consumer
-#    container_name: consumer2
-#    restart: always
-#    environment:
-#      - KAFKA_CONSUMER_GROUP_ID=consumer-group-1
-#    depends_on:
-#      - kafka1
-#      - kafka2
-#    networks:
-#      - kafka-spark
+      - kafka-connect
+      - connect-postgres
+      - connect-redis
 
   streaming:
     build:
@@ -189,11 +161,23 @@ services:
       - kafka1
       - kafka2
       - spark-master
-      - spark-worker-1
-      - spark-worker-2
     networks:
       - kafka-spark
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    networks:
+      - connect-redis
+
 networks:
   kafka-spark:
+    driver: "bridge"
+  kafka-zookeeper:
+    driver: "bridge"
+  kafka-connect:
+    driver: "bridge"
+  connect-postgres:
+    driver: "bridge"
+  connect-redis:
     driver: "bridge"
