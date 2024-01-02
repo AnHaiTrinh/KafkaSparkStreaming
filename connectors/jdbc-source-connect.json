@@ -8,7 +8,7 @@
     "connection.password": "password",
     "mode": "incrementing",
     "incrementing.column.name": "id",
-    "table.whitelist": "vehicles, rating_feedbacks, activity_logs",
+    "table.whitelist": "vehicles, activity_logs",
     "topic.prefix": "jdbc_",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
     "key.converter.schemas.enable": "false",

@@ -6,7 +6,7 @@ from confluent_kafka import Consumer, KafkaError, KafkaException
 
 
 consumer = Consumer({
-    'bootstrap.servers': 'localhost:9092,localhost:9093',
+    'bootstrap.servers': 'localhost:9092,localhost:9093, localhost:9094',
     'group.id': f'{os.getenv("KAFKA_CONSUMER_GROUP_ID")}',
     'enable.auto.commit': False,
     'auto.offset.reset': 'earliest'
@@ -32,6 +32,7 @@ def basic_consume_loop(consumer, topics):
                     raise KafkaException(msg.error())
             else:
                 print(f'Offset: {msg.offset()}')
+                print(f'Key: {msg.key()}')
                 result = json.loads(msg.value().decode('utf-8'))
                 print(result)
                 print('_' * 20)
