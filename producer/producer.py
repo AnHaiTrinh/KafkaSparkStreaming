@@ -30,7 +30,7 @@ if __name__ == '__main__':
                 "field": "state"
             }, {
                 "type": "int64",
-                "optional": False,
+                "optional": True,
                 "field": "vehicle_id"
             }, {
                 "type": "string",
@@ -42,7 +42,7 @@ if __name__ == '__main__':
         "name": "parking_state_schema"
     }
 
-    for i in range(12, 21):
+    for i in range(2, 11):
         payload = {
             'state': 'in',
             'vehicle_id': 1,

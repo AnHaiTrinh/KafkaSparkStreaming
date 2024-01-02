@@ -32,6 +32,11 @@ vehicle_schema = StructType([
     StructField("owner_id", IntegerType(), False)
 ])
 
+sensors_schema = StructType([
+    StructField("id", StringType(), False),
+    StructField("parking_space_id", IntegerType(), False)
+])
+
 activity_log_df = spark \
     .readStream \
     .format("kafka") \
