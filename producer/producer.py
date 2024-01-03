@@ -45,29 +45,10 @@ if __name__ == '__main__':
     for i in range(2, 11):
         payload = {
             'state': 'in',
-            'vehicle_id': 1,
+            'vehicle_id': None,
             'updated_at': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
         }
-        producer.produce(topic, key=json.dumps({
-            "schema": {
-                "type": "struct",
-                "fields": [
-                    {
-                        "type": "int64",
-                        "optional": False,
-                        "field": "id"
-                    }
-                ],
-                "optional": False,
-                "name": "parking_space_id_schema"
-            },
-            "payload": {
-                "id": i
-            }
-        }), value=json.dumps({
-            "schema": schema,
-            "payload": payload
-        }), callback=acked)
+        producer.produce(topic, key=str(i), value=json.dumps(payload), callback=acked)
         time.sleep(random.uniform(1, 2))
         # Wait up to 1 second for events. Callbacks will be invoked during
         # this method call if the message is acknowledged.
