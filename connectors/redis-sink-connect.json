@@ -1,5 +1,5 @@
 {
-  "name": "redis-sink-connector-vehicle",
+  "name": "redis-sink-connector",
   "config": {
     "connector.class": "com.redis.kafka.connect.RedisSinkConnector",
     "tasks.max": "1",

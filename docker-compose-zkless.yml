@@ -111,37 +111,38 @@ services:
       - "5432:5432"
     volumes:
       - .\postgres:/var/lib/postgresql/data
+      - .\init.sql:/tmp/sql/init.sql
 
-  kafka-source-connect:
-    image: confluentinc/cp-kafka-connect
-    container_name: kafka-source-connect
-    depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
-      - postgres
-    ports:
-      - "8089:8083"
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: "kafka1:29092,kafka2:29093,kafka3:29094"
-      CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-source-connect'
-      CONNECT_REST_PORT: 8083
-      CONNECT_GROUP_ID: kafka-source-connect
-      CONNECT_CONFIG_STORAGE_TOPIC: _kafka-source-connect-configs
-      CONNECT_OFFSET_STORAGE_TOPIC: _kafka-source-connect-offsets
-      CONNECT_STATUS_STORAGE_TOPIC: _kafka-source-connect-status
-      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
-      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
-      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components/,/connectors/"
-    volumes:
-      - .\connectors:/connectors
+#  kafka-source-connect:
+#    image: confluentinc/cp-kafka-connect
+#    container_name: kafka-source-connect
+#    depends_on:
+#      - kafka1
+#      - kafka2
+#      - kafka3
+#      - postgres
+#    ports:
+#      - "8089:8083"
+#    environment:
+#      CONNECT_BOOTSTRAP_SERVERS: "kafka1:29092,kafka2:29093,kafka3:29094"
+#      CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-source-connect'
+#      CONNECT_REST_PORT: 8083
+#      CONNECT_GROUP_ID: kafka-source-connect
+#      CONNECT_CONFIG_STORAGE_TOPIC: _kafka-source-connect-configs
+#      CONNECT_OFFSET_STORAGE_TOPIC: _kafka-source-connect-offsets
+#      CONNECT_STATUS_STORAGE_TOPIC: _kafka-source-connect-status
+#      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+#      CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
+#      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 3
+#      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 3
+#      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 3
+#      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+#      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components/,/connectors/"
+#    volumes:
+#      - .\connectors:/connectors
 
   kafka-sink-connect:
     image: confluentinc/cp-kafka-connect
@@ -188,17 +189,23 @@ services:
     container_name: streaming
     depends_on:
       - kafka-sink-connect
-      - kafka-source-connect
+#      - kafka-source-connect
       - spark-master
 
-  mqtt-proxy:
-    image: confluentinc/cp-kafka-mqtt
+#  mqtt-proxy:
+#    image: confluentinc/cp-kafka-mqtt
+#    container_name: mqtt-proxy
+#    ports:
+#      - "1883:1883"
+#    environment:
+#      KAFKA_MQTT_BOOTSTRAP_SERVERS: "kafka1:29092,kafka2:29093,kafka3:29094"
+#      KAFKA_MQTT_TOPIC_REGEX_LIST: "sensors:sensors*"
+#    depends_on:
+#      - kafka1
+#      - kafka2
+#      - kafka3
+  redis:
+    image: redis:alpine
+    container_name: redis
     ports:
-      - "1883:1883"
-    environment:
-      KAFKA_MQTT_BOOTSTRAP_SERVERS: "kafka1:29092,kafka2:29093,kafka3:29094"
-      KAFKA_MQTT_TOPIC_REGEX_LIST: "sensors:sensors*"
-    depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
+      - "6379:6379"

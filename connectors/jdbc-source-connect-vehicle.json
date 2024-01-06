@@ -9,6 +9,7 @@
     "mode": "timestamp+incrementing",
     "incrementing.column.name": "id",
     "timestamp.column.name": "updated_at, created_at",
+    "validate.non.null": false,
     "table.whitelist": "vehicles",
     "topic.prefix": "jdbc_",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",
@@ -17,4 +18,3 @@
     "value.converter.schemas.enable": "false"
   }
 }
-
