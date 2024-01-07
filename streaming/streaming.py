@@ -94,34 +94,6 @@ activity_log_df \
         """), how="leftOuter") \
     .withColumn("value", F.to_json(F.struct("activity_log_id", "vehicle_id", "license_plate", "parking_lot_id",
                                             "vehicle_type", "timestamp", "activity_type", "owner_id", "is_tracked"))) \
-    .writeStream \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", kafka_brokers) \
-    .option("topic", "activity_log_with_vehicle") \
-    .option("checkpointLocation", f"{checkpoint_path}/activity_log_with_vehicle") \
-    .start()
-
-activity_log_with_vehicle_df = spark \
-    .readStream \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", kafka_brokers) \
-    .option("subscribe", "activity_log_with_vehicle") \
-    .option("startingOffsets", "earliest") \
-    .load() \
-    .selectExpr("CAST(value AS STRING) AS json") \
-    .withColumn("data", F.from_json("json", activity_vehicle_schema)) \
-    .selectExpr("data.activity_log_id AS activity_log_id",
-                "data.activity_type AS activity_type",
-                "data.parking_lot_id AS parking_lot_id",
-                "data.vehicle_id AS vehicle_id",
-                "data.vehicle_type AS vehicle_type",
-                "data.timestamp AS timestamp",
-                "data.license_plate AS license_plate",
-                "data.owner_id AS owner_id",
-                "data.is_tracked AS is_tracked") \
-    .withColumn("timestamp", F.to_timestamp("timestamp"))
-
-activity_log_with_vehicle_df \
     .filter("is_tracked = true") \
     .select("activity_log_id", "vehicle_id", "license_plate", "parking_lot_id",
             "timestamp", "activity_type", "owner_id") \
@@ -135,16 +107,25 @@ activity_log_with_vehicle_df \
     .option("checkpointLocation", f"{checkpoint_path}/tracked_vehicles") \
     .start()
 
-activity_log_with_vehicle_df \
+vehicles_jdbc = spark \
+    .read \
+    .jdbc(os.getenv('DB_URL'), "vehicles", properties={
+        "user": os.getenv('DB_USER'),
+        "password": os.getenv('DB_PASSWORD'),
+    })
+
+
+activity_log_df \
+    .join(vehicles_jdbc, activity_log_df['vehicle_id'] == vehicles_jdbc['id'], how="inner") \
     .groupBy(F.window("timestamp", "1 hour")) \
-    .agg(F.sum(F.when(activity_log_with_vehicle_df["vehicle_type"] == 'car', 1).otherwise(0)).alias('car'),
-         F.sum(F.when(activity_log_with_vehicle_df["vehicle_type"] == 'motorbike', 1).otherwise(0)).alias('motorbike'),
-         F.sum(F.when(activity_log_with_vehicle_df["vehicle_type"] == 'truck', 1).otherwise(0)).alias('truck')) \
+    .agg(F.sum(F.when(vehicles_jdbc["vehicle_type"] == 'car', 1).otherwise(0)).alias('car'),
+         F.sum(F.when(vehicles_jdbc["vehicle_type"] == 'motorbike', 1).otherwise(0)).alias('motorbike'),
+         F.sum(F.when(vehicles_jdbc["vehicle_type"] == 'truck', 1).otherwise(0)).alias('truck')) \
     .withColumn("key", F.expr("CAST(window.start AS STRING)")) \
     .withColumn("value", F.to_json(F.struct("car", "motorbike", "truck"))) \
     .select("key", "value") \
     .writeStream \
-    .outputMode("update") \
+    .outputMode("complete") \
     .format("kafka") \
     .option("kafka.bootstrap.servers", kafka_brokers) \
     .option("topic", "parking_lot_vehicle") \
